@@ -26,7 +26,7 @@
       authDomain: "msesalert-b972d.firebaseapp.com",
       databaseURL: "https://msesalert-b972d-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "msesalert-b972d",
-      storageBucket: "msesalert-b972d.firebasestorage.app",
+      storageBucket: "msesalert-b972d.firebasedestorage.app",
       messagingSenderId: "992963491194",
       appId: "1:992963491194:web:f0d0b95343114e067e52c3"
     };
@@ -42,44 +42,39 @@
       const li = document.createElement('li');
       li.textContent = snapshot.val().message;
       alertsList.appendChild(li);
-
-      // Push notification
-      showNotification(snapshot.val().message);
     });
 
-    // Functions to simulate alerts
+    // Simulate alert functions
     window.simulateAlert = (msg) => { push(alertsRef, { message: msg }); }
     window.resetAlerts = () => { remove(alertsRef); alertsList.innerHTML = ''; }
 
     // Firebase Messaging
     const messaging = getMessaging(app);
 
-    // Request permission for notifications
+    // Request notification permission and get token
     Notification.requestPermission().then(permission => {
       if (permission === 'granted') {
-        console.log('Notification permission granted.');
-        getToken(messaging, { vapidKey: 'BOLqGcfL-JPtqJTRC6PrkQfD72J-EtesJmqBY4HEvgO5oIKlFrEP8h3yaF7soTdf6-psElXFfbzd1bmSOMgF7Mg' })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log('Device token:', currentToken);
-            } else {
-              console.log('No token available.');
-            }
-          })
-          .catch((err) => console.log('Error getting token:', err));
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then((registration) => {
+            console.log('Service Worker registered:', registration);
+            getToken(messaging, {
+              vapidKey: 'BOLqGcfL-JPtqJTRC6PrkQfD72J-EtesJmqBY4HEvgO5oIKlFrEP8h3yaF7soTdf6-psElXFfbzd1bmSOMgF7Mg',
+              serviceWorkerRegistration: registration
+            }).then(token => {
+              console.log('Device token:', token);
+            });
+          });
+      } else {
+        console.log('Notification permission denied.');
       }
     });
 
-    // Show notification function
-    function showNotification(message) {
-      if (Notification.permission === 'granted') {
-        new Notification('Hospital Alert', { body: message });
-      }
-    }
-
-    // Optional: handle foreground messages
+    // Handle foreground messages
     onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
+      const { title, body } = payload.notification || {};
+      if (title && body && Notification.permission === 'granted') {
+        new Notification(title, { body });
+      }
     });
   </script>
 </body>
