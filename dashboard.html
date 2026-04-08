@@ -76,6 +76,29 @@
         new Notification(title, { body });
       }
     });
+
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('Service Worker registered:', registration);
+
+      // Get the FCM token
+      getToken(messaging, {
+        vapidKey: 'BOLqGcfL-JPtqJTRC6PrkQfD72J-EtesJmqBY4HEvgO5oIKlFrEP8h3yaF7soTdf6-psElXFfbzd1bmSOMgF7Mg',
+        serviceWorkerRegistration: registration
+      })
+      .then((currentToken) => {
+        if (currentToken) {
+          console.log('Device token:', currentToken);
+          alert('Device token copied to console!'); // optional
+        } else {
+          console.log('No token available. Request permission to generate one.');
+        }
+      })
+      .catch((err) => console.log('Error getting token:', err));
+    });
+}
+    
   </script>
 </body>
 </html>
