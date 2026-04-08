@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hospital Alert Dashboard</title>
+</head>
+<body>
+  <h1>Active Alerts</h1>
+  <ul id="alerts"></ul>
+
+  <!-- Test buttons -->
+  <button onclick="simulateAlert('S1 ALERT')">Simulate S1</button>
+  <button onclick="simulateAlert('S2 ALERT')">Simulate S2</button>
+  <button onclick="simulateAlert('S3 ALERT')">Simulate S3</button>
+  <button onclick="simulateAlert('NURSE CALL')">Simulate Nurse</button>
+  <button onclick="resetAlerts()">Reset</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCePnTRSWFX-R0n4iIMLHIr0PZjk-WcHco",
+      authDomain: "msesalert-b972d.firebaseapp.com",
+      databaseURL: "https://msesalert-b972d-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "msesalert-b972d",
+      storageBucket: "msesalert-b972d.firebasestorage.app",
+      messagingSenderId: "992963491194",
+      appId: "1:992963491194:web:f0d0b95343114e067e52c3"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const alertsRef = ref(db, 'alerts');
+    const alertsList = document.getElementById('alerts');
+
+    // Listen for new alerts in Firebase
+    onChildAdded(alertsRef, (snapshot) => {
+      const li = document.createElement('li');
+      li.textContent = snapshot.val().message;
+      alertsList.appendChild(li);
+
+      // Push notification
+      showNotification(snapshot.val().message);
+    });
+
+    // Functions to simulate alerts
+    window.simulateAlert = (msg) => { push(alertsRef, { message: msg }); }
+    window.resetAlerts = () => { remove(alertsRef); alertsList.innerHTML = ''; }
+
+    // Firebase Messaging
+    const messaging = getMessaging(app);
+
+    // Request permission for notifications
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        getToken(messaging, { vapidKey: 'BOLqGcfL-JPtqJTRC6PrkQfD72J-EtesJmqBY4HEvgO5oIKlFrEP8h3yaF7soTdf6-psElXFfbzd1bmSOMgF7Mg' })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log('Device token:', currentToken);
+            } else {
+              console.log('No token available.');
+            }
+          })
+          .catch((err) => console.log('Error getting token:', err));
+      }
+    });
+
+    // Show notification function
+    function showNotification(message) {
+      if (Notification.permission === 'granted') {
+        new Notification('Hospital Alert', { body: message });
+      }
+    }
+
+    // Optional: handle foreground messages
+    onMessage(messaging, (payload) => {
+      console.log('Message received. ', payload);
+    });
+  </script>
+</body>
+</html>
