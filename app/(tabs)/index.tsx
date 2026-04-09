@@ -8,8 +8,9 @@ export default function HomeScreen() {
   const alertsRef = ref(db, 'alerts');
   const alertSound = useRef(null);
 
+  // For web, use string path
   useEffect(() => {
-    alertSound.current = new Audio(require('../../assets/alert.mp3'));
+    alertSound.current = new Audio('assets/alert.mp3');
   }, []);
 
   useEffect(() => {
@@ -84,77 +85,16 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#f0f4f7',
-    minHeight: '100%',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#2c3e50',
-    textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  alertButton: {
-    flex: 1,
-    paddingVertical: 15,
-    marginHorizontal: 5,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  resetButton: {
-    backgroundColor: '#2c3e50',
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  resetText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  alertList: {
-    marginTop: 10,
-  },
-  alertCard: {
-    backgroundColor: '#ffffff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderLeftWidth: 5,
-    borderLeftColor: '#e74c3c',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  alertMessage: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-  },
-  alertTime: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    marginTop: 5,
-  },
-  noAlerts: {
-    textAlign: 'center',
-    color: '#7f8c8d',
-    fontSize: 16,
-    marginTop: 20,
-  },
+  container: { padding: 20, backgroundColor: '#f0f4f7', minHeight: '100%' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 20, color: '#2c3e50', textAlign: 'center' },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
+  alertButton: { flex: 1, paddingVertical: 15, marginHorizontal: 5, borderRadius: 10, alignItems: 'center' },
+  buttonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  resetButton: { backgroundColor: '#2c3e50', paddingVertical: 12, borderRadius: 10, alignItems: 'center', marginBottom: 20 },
+  resetText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  alertList: { marginTop: 10 },
+  alertCard: { backgroundColor: '#ffffff', padding: 15, borderRadius: 10, marginBottom: 10, borderLeftWidth: 5, borderLeftColor: '#e74c3c', shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, shadowRadius: 4, elevation: 3 },
+  alertMessage: { fontSize: 18, fontWeight: 'bold', color: '#2c3e50' },
+  alertTime: { fontSize: 14, color: '#7f8c8d', marginTop: 5 },
+  noAlerts: { textAlign: 'center', color: '#7f8c8d', fontSize: 16, marginTop: 20 },
 });
