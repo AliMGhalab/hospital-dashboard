@@ -6,6 +6,18 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+// app/_layout.tsx
+import { Slot } from 'expo-router';
+
+if (typeof window !== 'undefined') {
+  // GitHub Pages repo name
+  __webpack_public_path__ = '/hospital-dashboard/';
+}
+
+export default function Layout() {
+  return <Slot />;
+}
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -33,3 +45,5 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+

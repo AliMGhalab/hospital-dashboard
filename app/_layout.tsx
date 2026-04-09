@@ -22,3 +22,20 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+// Declare webpack path for TypeScript
+declare let __webpack_public_path__: string;
+
+import { Slot } from 'expo-router';
+import { useEffect } from 'react';
+
+export default function Layout() {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // This makes your web app work on GitHub Pages under /hospital-dashboard/
+      __webpack_public_path__ = '/hospital-dashboard/';
+    }
+  }, []);
+
+  return <Slot />;
+}

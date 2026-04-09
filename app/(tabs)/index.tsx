@@ -3,21 +3,28 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { db } from '../../firebaseConfig';
 
-export default function HomeScreen() {
-  const [alerts, setAlerts] = useState([]);
-  const alertsRef = ref(db, 'alerts');
-  const alertSound = useRef(null);
+// Alert interface
+interface Alert {
+  message: string;
+  time: string;
+}
 
-  // For web, use string path
+export default function HomeScreen() {
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const alertsRef = ref(db, 'alerts');
+  const alertSound = useRef<HTMLAudioElement | null>(null);
+
+  // Load alert sound
   useEffect(() => {
-    alertSound.current = new Audio('assets/alert.mp3');
+    alertSound.current = new Audio(require('../../assets/alert.mp3'));
   }, []);
 
+  // Listen to Firebase alerts
   useEffect(() => {
     const unsubscribe = onValue(alertsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const alertsArray = Object.values(data);
+        const alertsArray = Object.values(data) as Alert[];
         setAlerts(alertsArray);
 
         if (alertSound.current) {
@@ -34,16 +41,14 @@ export default function HomeScreen() {
     return () => unsubscribe();
   }, []);
 
-  const sendAlert = (msg) => {
+  const sendAlert = (msg: string) => {
     push(alertsRef, {
       message: msg,
-      time: new Date().toLocaleTimeString()
+      time: new Date().toLocaleTimeString(),
     });
   };
 
-  const resetAlerts = () => {
-    remove(alertsRef);
-  };
+  const resetAlerts = () => remove(alertsRef);
 
   return (
     <ScrollView style={styles.container}>
@@ -84,6 +89,7 @@ export default function HomeScreen() {
   );
 }
 
+// Styles (keep as you have them)
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: '#f0f4f7', minHeight: '100%' },
   title: { fontSize: 28, fontWeight: 'bold', marginBottom: 20, color: '#2c3e50', textAlign: 'center' },
